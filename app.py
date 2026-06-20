@@ -20,10 +20,7 @@ from ai_engine import AIEngine
 st.set_page_config(page_title="Smart Airport Digital Twin", page_icon="✈️", layout="wide")
 
 
-# --------------------------------------------------------------------------- #
-# INITIALIZATION
-# --------------------------------------------------------------------------- #
-@st.cache_resource
+
 def get_ai_engine():
     return AIEngine()
 
@@ -48,9 +45,7 @@ conn = st.session_state.conn
 ai_engine = get_ai_engine()
 
 
-# --------------------------------------------------------------------------- #
-# SIDEBAR — simulation controls + navigation
-# --------------------------------------------------------------------------- #
+
 clock_row = conn.execute("SELECT sim_time_value, tick_count FROM sim_clock WHERE id=1").fetchone()
 sim_time = datetime.fromisoformat(clock_row["sim_time_value"])
 
@@ -86,9 +81,7 @@ for _, r in log_df.iterrows():
     st.sidebar.text(f"[{r['timestamp']}] {r['module']}: {r['message'][:46]}")
 
 
-# --------------------------------------------------------------------------- #
-# PAGE: OVERVIEW / DIGITAL TWIN
-# --------------------------------------------------------------------------- #
+
 def page_overview():
     st.title("🛰️ Digital Twin — Live Airport State")
     kpis = q.get_kpis(conn)
@@ -157,9 +150,7 @@ def page_overview():
         st.dataframe(rdf, use_container_width=True, height=250, hide_index=True)
 
 
-# --------------------------------------------------------------------------- #
-# PAGE: FLIGHTS
-# --------------------------------------------------------------------------- #
+
 def page_flights():
     st.title("🛫 Flight Lifecycle")
     fdf = q.get_flights_df(conn)
@@ -189,9 +180,7 @@ def page_flights():
         c3.metric("Boarding progress", f"{row['boarding_pct']}%")
 
 
-# --------------------------------------------------------------------------- #
-# PAGE: PASSENGERS
-# --------------------------------------------------------------------------- #
+
 def page_passengers():
     st.title("🧳 Passenger Journey")
     funnel = q.get_passenger_funnel(conn)
@@ -213,9 +202,7 @@ def page_passengers():
                      use_container_width=True, hide_index=True)
 
 
-# --------------------------------------------------------------------------- #
-# PAGE: CHECK-IN & SECURITY
-# --------------------------------------------------------------------------- #
+
 def page_checkin_security():
     st.title("🛂 Check-in, Security & Immigration")
 
@@ -237,9 +224,7 @@ def page_checkin_security():
         st.warning(f"**{r['name']}** — {r['alert']}")
 
 
-# --------------------------------------------------------------------------- #
-# PAGE: BAGGAGE
-# --------------------------------------------------------------------------- #
+
 def page_baggage():
     st.title("🧷 Baggage Handling Lifecycle")
     funnel = q.get_baggage_funnel(conn)
@@ -268,9 +253,7 @@ def page_baggage():
         st.dataframe(match, use_container_width=True, hide_index=True)
 
 
-# --------------------------------------------------------------------------- #
-# PAGE: GATES & RUNWAYS
-# --------------------------------------------------------------------------- #
+
 def page_gates_runways():
     st.title("🚪 Gates & Runways")
     c1, c2 = st.columns(2)
@@ -282,9 +265,7 @@ def page_gates_runways():
         st.dataframe(q.get_runways_df(conn), use_container_width=True, hide_index=True, height=400)
 
 
-# --------------------------------------------------------------------------- #
-# PAGE: GROUND OPS & RESOURCES
-# --------------------------------------------------------------------------- #
+
 def page_ground_ops():
     st.title("🚚 Ground Operations & Resource Management")
     rdf = q.get_resources_df(conn)
@@ -298,9 +279,7 @@ def page_ground_ops():
     st.plotly_chart(fig2, use_container_width=True)
 
 
-# --------------------------------------------------------------------------- #
-# PAGE: WEATHER
-# --------------------------------------------------------------------------- #
+
 def page_weather():
     st.title("🌦️ Weather Impact Engine")
     w = q.get_weather_latest(conn)
@@ -321,9 +300,7 @@ def page_weather():
             "and increases delay accumulation across every flight currently active.")
 
 
-# --------------------------------------------------------------------------- #
-# PAGE: INCIDENTS
-# --------------------------------------------------------------------------- #
+
 def page_incidents():
     st.title("🚨 Incident Simulation & AI Response")
     idf = q.get_incidents_df(conn)
@@ -338,9 +315,7 @@ def page_incidents():
     )
 
 
-# --------------------------------------------------------------------------- #
-# PAGE: AI INSIGHTS
-# --------------------------------------------------------------------------- #
+
 def page_ai_insights():
     st.title("🧠 AI Decision Engine — Recommendations")
     recs = ai_engine.generate_recommendations(conn)
